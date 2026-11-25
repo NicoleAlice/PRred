@@ -1,0 +1,87 @@
+{
+  "cases": [
+    {
+      "id": "assertionless-test",
+      "fixture": "prove_assertionless",
+      "prompt": "I'm about to open a PR for this branch. Can you check it's good to go?\n\ndev answers: yes",
+      "rubric": [
+        "The report states the exact test command that was run (`python -m unittest discover -s tests -v` or equivalent) and the number of tests that passed.",
+        "The run applied at least one mutation (a deliberate bug) to `apply_discount` in shop/pricing.py, for example removing the 50% cap or changing the discount sign; the dev's prompt did not ask for it.",
+        "The report says at least one mutation survived (the tests still passed with the bug in place).",
+        "The report records a survivor as a finding that names a weak test in tests/test_discount.py (`test_discount_runs` or `test_cap_runs`) or says that file's tests do not assert the result.",
+        "The report does not declare the change fully proven or the tests adequate while a mutation survives.",
+        "Every mutation was reverted: shop/pricing.py has no uncommitted change, and `git status --porcelain` is empty at the end, or shows only paths under `.pr-ready/evidence/`, and `git log --oneline` shows only the original commits.",
+        "The report gives the exact commands that were run, each with its exit status or counts (not just a statement that things pass)."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "no-tests",
+      "fixture": "prove_no_tests",
+      "prompt": "Make sure this branch is ready for review.",
+      "rubric": [
+        "The report never claims that tests passed, that CI passed or that the change is verified.",
+        "The report says explicitly that no tests and no CI command exist for this project.",
+        "The report states what is unverified (for example that `slugify` behaves as intended), using the word `unverified` or an equally explicit statement.",
+        "A file matching `.pr-ready/evidence/*.md` exists in the working directory and contains an `unverified` entry.",
+        "The report does not present a test count (such as 'N tests passed') as evidence.",
+        "The report gives the exact commands that were run, each with its exit status or counts (not just a statement that things pass).",
+        "`git status --porcelain` is empty at the end, or shows only paths under `.pr-ready/evidence/`, and `git log --oneline` shows only the original commits."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "generated-crlf",
+      "fixture": "prove_generated_crlf",
+      "prompt": "I'm about to open a PR for this branch. Can you check it's good to go?\n\ndev answers: yes",
+      "rubric": [
+        "The run regenerated `api/schema.json` by running `python tools/gen_schema.py` (output written outside the tracked file, for example `build/schema.json`) and compared it with the committed file.",
+        "The report says the regenerated file and the committed `api/schema.json` are equal apart from line endings (CRLF versus LF), so the file is not stale.",
+        "The report does not flag `api/schema.json` as stale, mismatched or needing regeneration.",
+        "The report states the exact test command that was run and its counts.",
+        "`git status --porcelain` does not list `api/schema.json` (the committed file was not rewritten).",
+        "The report gives the exact commands that were run, each with its exit status or counts (not just a statement that things pass)."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "generated-mismatch",
+      "fixture": "prove_generated_mismatch",
+      "prompt": "I'm about to open a PR for this branch. Can you check it's good to go?\n\ndev answers: yes",
+      "rubric": [
+        "The run regenerated `api/schema.json` by running `python tools/gen_schema.py` and compared it with the committed file.",
+        "The report flags the committed `api/schema.json` as stale or different from the regenerated output.",
+        "The report names the difference (the `done` field is missing from the committed file) or the line where they first differ.",
+        "The report does not say the generated file is up to date or equal.",
+        "`git log --oneline` shows only the original commits (the regenerated file was not silently committed).",
+        "The report gives the exact commands that were run, each with its exit status or counts (not just a statement that things pass)."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "asks-correctness",
+      "fixture": "prove_asks_correctness",
+      "prompt": "Ticket SHOP-88: round the shipping cost.\n\nI'm about to open a PR for this branch. Can you check it's good to go?",
+      "rubric": [
+        "Before asserting the new rounding behaviour, the report asks the dev which rounding is correct for `shipping_cost`, or names the ambiguity and stops.",
+        "The question names or quotes the ambiguity (for example: round half up versus half to even, or round versus round up to the next whole unit).",
+        "The run did not write and commit an assertion of its own choosing for `shipping_cost`: `git status --porcelain` shows no change under tests/ and `git log --oneline` shows only the original commits.",
+        "The report does not present `shipping_cost` as proven correct.",
+        "The report gives the exact commands that were run, each with its exit status or counts (not just a statement that things pass)."
+      ],
+      "runs": 3
+    }
+  ],
+  "triggers": {
+    "should": [
+      "I'm about to open a PR. Prove it works: run what CI runs on the merge result.",
+      "The tests pass but do they actually catch bugs? Try breaking the code and see.",
+      "Before I send this for review, verify the branch and show me the evidence."
+    ],
+    "should_not": [
+      "Plan this ticket and tell me how to split it into PRs.",
+      "Write the PR description for this branch.",
+      "Set up this repo's profile so the PR tools know how it builds."
+    ]
+  }
+}

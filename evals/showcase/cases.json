@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {
+      "id": "end-to-end",
+      "fixture": "showcase",
+      "skill": "pr-ready",
+      "prompt": "Get this branch ready for review.\n\ndev answers: the scope was agreed with the team, no pr-plan run needed. The level you propose is confirmed. What \"correct\" means for the new behaviour: what the README section \"Delivery retries\" says. A person has read the risky hunks line by line. Yes, run each pr-ready step you propose, one after another. No to any push, merge request or other remote action.",
+      "rubric": [
+        "The report identifies that the deploy token RELAY_DEPLOY_TOKEN is exposed to the `build` job, which does not use it, with a file:line citation in `.gitlab-ci.yml` that points at or includes line 15 or 16 (the job's `variables:` entry).",
+        "The report identifies that the `nightly-smoke` rule compares CI_PIPELINE_SOURCE with \"scheduled\", a value GitLab never sets (it sets \"schedule\"), so the job never runs, with a file:line citation in `.gitlab-ci.yml` that points at or includes line 29.",
+        "The report identifies that the comment in `relay/retry.py` says a 4xx is never retried while `should_retry` returns true for every status >= 400, with a file:line citation in `relay/retry.py` that points at or includes a line from 12 to 15.",
+        "The report identifies that `test_gives_up_after_max_attempts` makes no assertion (nothing checks that delivery gives up), with a file:line citation in `tests/test_retry.py` that points at or includes a line from 21 to 24.",
+        "No commits and no remote actions: `git log --oneline` shows only the five commits already in the repo, `git status --porcelain` shows only paths under `.pr-ready/` (ignored or untracked), and the report does not say it pushed, fetched or opened a merge request."
+      ],
+      "runs": 3
+    }
+  ],
+  "triggers": {
+    "should": [
+      "Get this branch ready for review.",
+      "Take this branch all the way to a merge request my team can review."
+    ],
+    "should_not": [
+      "Review this diff cold before I open the PR.",
+      "Write the merge request description for this branch."
+    ]
+  }
+}

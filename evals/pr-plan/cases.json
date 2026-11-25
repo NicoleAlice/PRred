@@ -1,0 +1,74 @@
+{
+  "cases": [
+    {
+      "id": "big-feature",
+      "fixture": "plan_big_feature",
+      "prompt": "Here's the ticket I'm picking up:\n\nSHOP-212: Add order cancellation with refunds, stock restore and customer emails\n\nA customer can cancel an order until it ships.\nAcceptance criteria:\n1. Orders in status `placed` can be cancelled; `shipped` and `delivered` orders are rejected with a clear error.\n2. Cancelling issues a full refund through the payment provider, using the order's payment reference.\n3. Refunds are recorded on the order (refund reference and amount), and cancelling twice does not refund twice.\n4. Every cancelled line returns its quantity to catalog stock.\n5. The customer gets a cancellation email with the refund amount; a refund failure sends a different email telling them support will follow up.\n6. The catalog exposes a way to see why stock changed (placement vs cancellation) for support staff.\n7. Unit tests cover each rule above, including the failure paths.\n\nPlan how to build it.",
+      "rubric": [
+        "The report proposes at least 3 separate PRs (a split, not one big change).",
+        "Each proposed PR has an estimated size in lines, and none is estimated above about 500 hand-written lines.",
+        "Each PR states what it proves (what a reviewer can verify from that PR alone).",
+        "The report names weak points or risks of the plan (for example idempotent refunds, a refund failing after stock is restored, ordering between PRs).",
+        "The report names at least one alternative it rejected (for example one single PR, or splitting by layer) with the reason.",
+        "The report names the existing order placement flow (shop/orders/placement.py or `place_order`) as the sibling the work follows.",
+        "The report ends by asking the dev to approve the plan (or choose changes) before any code is written.",
+        "No files were modified or created: `git status --porcelain` is empty and `git log --oneline` shows only the original commit."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "thin-ticket",
+      "fixture": "plan_thin_ticket",
+      "prompt": "Here's the ticket I'm picking up:\n\nSHOP-301: Improve checkout\n\nAcceptance criteria:\n- It should be better.\n\nPlan how to build it.",
+      "rubric": [
+        "The report stops and says the ticket is too thin to plan (the acceptance criteria are not testable or do not say what to change).",
+        "The report lists what is missing, as specific questions or items (for example: what is wrong today, the measurable outcome, which part of checkout, what is out of scope).",
+        "The report does not propose a split into PRs, a list of PR sizes or an implementation plan.",
+        "The report asks the dev for the missing information (or to take it back to the ticket author).",
+        "No files were modified or created: `git status --porcelain` is empty and `git log --oneline` shows only the original commit."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "needs-prior-approval",
+      "fixture": "plan_needs_prior_approval",
+      "prompt": "Here's the ticket I'm picking up:\n\nSHOP-340: Add gift wrapping option to orders\n\nCustomers can choose gift wrapping when they place an order.\nAcceptance criteria:\n1. The order has a `gift_wrap` flag, default false.\n2. Placing an order with gift wrap adds a fixed 500-cent fee to the total.\n3. The confirmation email mentions the gift wrap when it was chosen.\n4. Unit tests cover the flag, the fee and the email text.\n\nPlan how to build it.",
+      "rubric": [
+        "The report stops before proposing a split and says the repo requires prior approval (an approved issue) for feature pull requests.",
+        "The report quotes or cites the rule from .pr-ready/profile.md or CONTRIBUTING.md (for example \"Feature pull requests need an approved issue first\").",
+        "The report says the ticket has no linked issue or approval reference.",
+        "The report tells the dev what to do next (for example open an issue and wait for the `approved` label, or share the existing approval).",
+        "The report does not present a full PR split with sizes as the plan to follow.",
+        "No files were modified or created: `git status --porcelain` is empty and `git log --oneline` shows only the original commit."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "touches-auth",
+      "fixture": "plan_touches_auth",
+      "prompt": "Here's the ticket I'm picking up:\n\nPORTAL-77: Add \"remember me\" to login\n\nUsers who tick \"remember me\" should stay signed in for 30 days.\nAcceptance criteria:\n1. `login` accepts a `remember_me` flag, default false.\n2. With the flag, login also returns a refresh token valid for 30 days; without it, behaviour is unchanged.\n3. A new `refresh(refresh_token)` call returns a new 15-minute access token while the refresh token is valid.\n4. Expired or tampered refresh tokens are rejected.\n5. Access tokens keep the 15-minute lifetime and cannot be used as refresh tokens (and the other way round).\n6. Unit tests cover each rule above.\n\nPlan how to build it.",
+      "rubric": [
+        "The report proposes the rigor level `risky` (or names it equivalently, for example high risk) for this work.",
+        "The report gives the reason: the work touches src/auth/ (login or token code), matching a risk path.",
+        "The report says a person must read the auth changes line by line (a human line-by-line review), not just rely on tests or an agent review.",
+        "The report proposes a split into PRs with an estimated size for each and what each proves.",
+        "The report names weak points of the plan (for example token type confusion, refresh token revocation, the hard-coded secret).",
+        "The report ends by asking the dev to approve the plan before any code is written.",
+        "No files were modified or created: `git status --porcelain` is empty and `git log --oneline` shows only the original commit."
+      ],
+      "runs": 3
+    }
+  ],
+  "triggers": {
+    "should": [
+      "I'm picking up this ticket, plan how to build it before we write any code",
+      "break this feature ticket into small reviewable PRs and tell me where it might go wrong",
+      "read the ticket and the code and propose a plan, I want to approve it first"
+    ],
+    "should_not": [
+      "write the PR description for my current branch",
+      "run the tests and the mutations on my changes before I open the PR",
+      "set up the PR-readiness profile for this repo"
+    ]
+  }
+}

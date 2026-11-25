@@ -1,0 +1,57 @@
+{
+  "cases": [
+    {
+      "id": "gitlab-ai-forbidden",
+      "fixture": "setup_gitlab_ai_forbidden",
+      "prompt": "Set up a PR-readiness profile for this repo: how to run CI locally, what is generated, the contribution and AI rules. Save it as .pr-ready/profile.md, but show me the draft first.\n\ndev answers: approve",
+      "rubric": [
+        "The final report shows the full draft profile and says it was shown to the dev before any file was written (the approval gate comes before the save).",
+        "The draft has `host: gitlab` (or equivalent wording naming GitLab as the host).",
+        "The draft has `ai_description: forbidden` and quotes the sentence \"Do not submit pull request descriptions written by AI tools\" next to it, attributed to CONTRIBUTING.md.",
+        "The Commands section lists `pytest -q` taken from .gitlab-ci.yml and no command that appears in neither the CI file nor the README.",
+        "The draft names the merge request template under .gitlab/merge_request_templates/ as the PR template.",
+        "Policy fields without a quoted source (for example ai_disclosure) are marked `unclear`, not guessed.",
+        "The file .pr-ready/profile.md exists in OUT_DIR after the run, and the report orders draft, then approval, then save."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "bare-no-ci",
+      "fixture": "setup_bare_no_ci",
+      "prompt": "Set up a PR-readiness profile for this repo: how to run CI locally, what is generated, the contribution and AI rules. Save it as .pr-ready/profile.md, but show me the draft first.\n\ndev answers: approve",
+      "rubric": [
+        "The profile (final report or .pr-ready/profile.md in OUT_DIR) has `host: none`.",
+        "The Commands section says `none found` for CI reproduction and tests.",
+        "No test, build or CI command is invented: the profile contains no `pytest`, `make`, `npm` or similar command that no file in the repo supports.",
+        "The policy fields (ai_description, ai_disclosure, prior_approval) are `unclear` because the repo has no policy text to quote.",
+        "The draft was shown before .pr-ready/profile.md was written."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "rerun-keeps-edits",
+      "fixture": "setup_rerun_keeps_edits",
+      "prompt": "Refresh the PR-readiness profile for this repo (.pr-ready/profile.md exists already). Re-read the CI and contribution files and update what changed, but do not lose anything I wrote by hand. Show me the result before saving.\n\ndev answers: approve",
+      "rubric": [
+        "The final .pr-ready/profile.md in OUT_DIR still contains the row `| Flaky test_cache on CI | shared tmp dir | rerun once |`.",
+        "The final report says the Known traps section was kept because the dev edited it (compared against .pr-ready/.profile.generated.md).",
+        "The profile still has `host: gitlab` and `ai_description: forbidden` with the CONTRIBUTING.md quote.",
+        "The file .pr-ready/.profile.generated.md still exists in OUT_DIR and does not contain the Flaky test_cache row.",
+        "The draft was shown to the dev before the save."
+      ],
+      "runs": 3
+    }
+  ],
+  "triggers": {
+    "should": [
+      "set up pr-ready for this repo",
+      "create a PR readiness profile with the CI commands and contribution rules",
+      "figure out this repo's contribution and AI-usage policy and save a profile for it"
+    ],
+    "should_not": [
+      "write the PR description for my current branch",
+      "review this diff before I open the pull request",
+      "split my big branch into smaller pull requests"
+    ]
+  }
+}

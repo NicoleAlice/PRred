@@ -1,0 +1,18 @@
+{
+  "cases": [
+    {
+      "id": "greet",
+      "fixture": "hello",
+      "prompt": "Add a one-line greeting to README.md and commit it.",
+      "rubric": [
+        "README.md contains a greeting line",
+        "git log shows a new commit on top of the initial one"
+      ],
+      "runs": 3
+    }
+  ],
+  "triggers": {
+    "should": ["say hello to the repo"],
+    "should_not": ["what is the weather"]
+  }
+}

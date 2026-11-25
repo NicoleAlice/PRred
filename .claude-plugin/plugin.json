@@ -1,0 +1,8 @@
+{
+  "name": "prred",
+  "version": "0.1.0",
+  "description": "Get a change ready for review: scope plan, proof, cold review and a PR description that follows the project's own rules.",
+  "author": { "name": "Nicole Danni" },
+  "license": "MIT",
+  "keywords": ["pull-request", "code-review", "workflow", "git"]
+}

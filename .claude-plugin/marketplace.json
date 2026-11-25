@@ -1,0 +1,11 @@
+{
+  "name": "prred",
+  "owner": { "name": "Nicole Danni" },
+  "plugins": [
+    {
+      "name": "prred",
+      "source": "./",
+      "description": "Get a change ready for review: scope plan, proof, cold review and a PR description that follows the project's own rules."
+    }
+  ]
+}

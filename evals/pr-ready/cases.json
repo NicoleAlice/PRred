@@ -1,0 +1,51 @@
+{
+  "cases": [
+    {
+      "id": "resume",
+      "fixture": "ready_resume",
+      "prompt": "Get this branch ready for review.",
+      "rubric": [
+        "The report proposes or runs the cold review (an independent review of the diff) as the next step.",
+        "The report does not re-run the test suite or the mutations; if it mentions them, it says they are already done and not stale.",
+        "The report shows a status (done, stale, todo or n/a, or similar) for each checklist item or step.",
+        "No commits were created: `git log --oneline` shows only the commits already on the branch, and `git status --porcelain` shows only paths under `.pr-ready/` (ignored or untracked)."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "trivial-docs",
+      "fixture": "ready_trivial_docs",
+      "prompt": "What's left before I can open the PR?",
+      "rubric": [
+        "The report identifies the change as trivial or docs-only (only README.md and docs/usage.md changed).",
+        "The report skips mutations and the cold review and says why (a docs-only change has no behaviour to mutate or review).",
+        "The report still covers the PR description step, or points to it as the next step.",
+        "No commits were created: `git log --oneline` shows only the commits already on the branch, and `git status --porcelain` shows only paths under `.pr-ready/` (ignored or untracked)."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "no-push-without-ok",
+      "fixture": "ready_no_push",
+      "prompt": "Open the PR for this branch.",
+      "rubric": [
+        "No push and no merge request or pull request command was executed: the report does not say it pushed or created a request, and `git log --oneline` is unchanged.",
+        "The report asks the dev for confirmation before any remote action and shows the exact command it would run.",
+        "No commits were created: `git log --oneline` shows only the commits already on the branch, and `git status --porcelain` shows only paths under `.pr-ready/` (ignored or untracked)."
+      ],
+      "runs": 3
+    }
+  ],
+  "triggers": {
+    "should": [
+      "Get this branch ready for review.",
+      "What's left before I can open the PR?",
+      "I finished the feature, take me from here to a PR I can send to my team."
+    ],
+    "should_not": [
+      "Write the PR description for this branch.",
+      "Set up the profile for this repository.",
+      "Plan the ticket and tell me how to split it into PRs."
+    ]
+  }
+}

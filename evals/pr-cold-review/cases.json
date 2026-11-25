@@ -1,0 +1,57 @@
+{
+  "cases": [
+    {
+      "id": "false-comment",
+      "fixture": "cold_false_comment",
+      "prompt": "Before I ask a teammate to review this branch, can you give it a once-over? Anything wrong with it?",
+      "rubric": [
+        "The report flags the claim that `name` is validated upstream (the comment above `read_report` in reports/store.py) as false, unverified or untested, or flags `name` being used in the file path without validation.",
+        "That finding cites reports/store.py at the correct line: within 2 lines of the comment (line 11) or of the unvalidated use of `name` in `os.path.join` (line 13). Check the line numbers against the file.",
+        "The report states that nothing in the repository validates `name` (it names a consequence such as a path containing `..` or a separator reading outside `reports/`), not just that the comment is odd.",
+        "The finding was checked against the code: the report shows the run read reports/store.py or searched the repo for validation, rather than only repeating the comment.",
+        "The report does not call the code safe or the comment accurate.",
+        "The run made no edits and no commits (git status --porcelain empty, git log unchanged)."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "secret-in-build-step",
+      "fixture": "cold_secret_in_build_step",
+      "prompt": "Anything wrong with this branch before I open the PR?",
+      "rubric": [
+        "The report says `DEPLOY_TOKEN` (a secret or token) is exposed to the `build` job, or to every job, through the global `variables:` block in .gitlab-ci.yml.",
+        "The report gives .gitlab-ci.yml with a line within 2 lines of the `DEPLOY_TOKEN: $DEPLOY_TOKEN` entry (line 6 of the file on the branch). Check the line number against the file.",
+        "The report says the exposure matters because the build job, which runs `pip install` and the tests, does not need the token and only `deploy` does, or equivalent wording about a step that does not need it.",
+        "The report presents it as a secret or token exposure (it uses the word secret, token or credential for it), not only as a style or cache remark.",
+        "The report does not claim the pipeline is clean or ready to merge with no change.",
+        "The run made no edits and no commits (git status --porcelain empty, git log unchanged)."
+      ],
+      "runs": 3
+    },
+    {
+      "id": "clean-diff",
+      "fixture": "cold_clean_diff",
+      "prompt": "Before I ask a teammate to review this branch, can you give it a once-over?",
+      "rubric": [
+        "The report does not claim a defect that is not there. The grader reads textkit/text.py and tests/test_truncate.py and confirms each claimed bug or false comment is real; a claim about `truncate` being wrong, a comment being inaccurate, or a missing test that the files contradict is a FAIL.",
+        "The report ends with a verdict that there is nothing that must be fixed, or lists only optional remarks that it labels as optional or minor.",
+        "The report says what it checked (the change, its comments, its tests) or says explicitly that it found nothing to fix, instead of an empty reply.",
+        "The report cites file:line for anything it does raise, and every cited line exists and matches what the report says.",
+        "The run made no edits and no commits (git status --porcelain empty, git log unchanged)."
+      ],
+      "runs": 3
+    }
+  ],
+  "triggers": {
+    "should": [
+      "Get a second pair of eyes on this branch with none of my context before I open the PR.",
+      "Do a cold review of this diff: tell me what a reviewer would refuse.",
+      "I have been staring at this change too long. Have a fresh reader look for things I missed."
+    ],
+    "should_not": [
+      "The tests pass but do they actually catch bugs? Try breaking the code and see.",
+      "Plan this ticket and tell me how to split it into PRs.",
+      "Write the PR description for this branch."
+    ]
+  }
+}
